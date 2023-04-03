@@ -1,0 +1,106 @@
+\documentclass[float=false, crop=true]{standalone}
+
+\usepackage{graphicx} % Required for inserting images
+\usepackage{tikz}
+\usepackage{xcolor}
+\usepackage{pgfplots}
+\usepackage{svg}
+\usepackage{tikz}
+\usepackage{xspace}
+
+\usetikzlibrary{shapes.geometric,fit,positioning,arrows.meta,calc}
+
+\pgfplotsset{compat=1.16}
+
+\newcommand{\memento}{\textsc{Memento}\xspace}
+
+\definecolor{mem}{HTML}{00467f}
+
+\begin{document}
+
+\begin{tikzpicture}[thick]
+
+\pgfdeclarelayer{bg}    % declare background layer
+\pgfdeclarelayer{mid}    % declare background layer
+\pgfsetlayers{bg,mid,main}  % set the order of the layers (main is the standard layer)
+\newcommand \headerdist {0.4cm};      % distance between headers and first item
+\newcommand \userdist {0.6cm};        % distance of items on user side
+\newcommand \memdist {0.5cm};         % distance of items on memento side
+\tikzstyle{every node}=[rectangle, fill=white, align=center, draw=black, text=black, inner sep=4pt];
+
+% User side
+\node[draw=none, fill=white, rectangle, align=center] 
+    (user) {\Large\textsc{User}};
+\node[below=\headerdist of user] 
+    (u1) {specify \texttt{config\_matrix}};
+\node[below=\userdist of u1] 
+    (u2) {define \texttt{exp\_func}};
+\node[below=\userdist of u2] 
+    (u3) {start \memento};
+\node[below=\userdist of u3, draw=none, fill=none] 
+    (u4) {\includesvg[height=1cm]{tea-icon.svg}};
+\node[below=\userdist of u4] 
+    (u5) {collect results};
+
+
+% Memento side
+\node[right=6cm of user, draw=none, fill=white, rectangle, align=center] 
+    (mem) {\Large\textcolor{mem}{\memento}};
+\node[below=\headerdist of mem] 
+    (m1) {\memento Runner};
+\node[below=\memdist of m1] 
+    (m2) {Create Parameter Options};
+\node[below=\memdist of m2, text width=8cm] 
+    (m3) {Caching and Checkpointing};
+\node[below=\memdist of m3.south west, anchor=north west, rounded corners=1ex] 
+    (m4) {Parallel Run 1};
+\node[below=\memdist of m3, rounded corners=1ex]  
+    (m5) {Parallel Run 2};
+\node[below=\memdist of m3.south east, anchor=north east, rounded corners=1ex]  
+    (m6) {Parallel Run n};
+\node[draw=none, fill=none, scale=0.7] at ($(m5)!0.5!(m6)$) {$\cdots$};
+\node[below=\memdist of m5, text width=8cm] 
+    (m7) {Gather Metrics};
+\node[below=\memdist of m7] 
+    (m8) {Create Results and Send Notifications};
+% \node[below=\memdist of m4.south west, anchor=north west, text width=3.5cm] 
+%     (m7) {Gather Metrics};
+% \node[below=\memdist of m6.south east, anchor=north east, text width=3.5cm] 
+%     (m8) {Send Notifications};
+% \node[below=\memdist of $(m7.south)!0.5!(m8.south)$] 
+%     (m9) {Create Results};
+
+
+% lines
+\begin{pgfonlayer}{mid}
+    \tikzstyle{every path}=[gray, very thick, rounded corners=5pt];
+    \draw[] (u1) -- (u2) {};
+    \draw[] (u2) -- (u3) {};
+    \draw[] (u3) -- (u4) {};
+    \draw[] (u4) -- (u5) {};
+    \draw[] (m1) -- (m2) {};
+    \draw[] (m2) - ++(0,-0.5) -| (m4) {};
+    \draw[] (m2) -- (m5) {};
+    \draw[] (m2) - ++(0,-0.5) -| (m6) {};
+    % \draw[] (m4) - ++(0, -1.7) -| (m8) {};
+    % \draw[] (m5) -- (m8) {};
+    % \draw[] (m6) - ++(0, -1.7) -| (m8) {};
+    \draw[] (m4) - ++(0, -1.1) -| (m8) {};
+    \draw[] (m5) -- (m8) {};
+    \draw[] (m6) - ++(0, -1.1) -| (m8) {};
+\end{pgfonlayer}
+    
+
+% gray boxes
+\begin{pgfonlayer}{bg}
+    \node (R1) 
+        [fill=mem!5!white, draw=mem!5!white, inner sep=0.5em, rectangle, fit=(m1) (m3) (m8)] {};
+    \fill[mem!5!white, draw=mem!5!white] (u4.east)--(R1.south west)--(R1.north west);
+    \node[above left=-0.025cm and 0.08cm of u4.center,
+        fill=mem, draw=none, minimum width=0.19cm, minimum height=0.25cm, inner sep=0]
+    {};
+\end{pgfonlayer}
+
+\end{tikzpicture}
+ 
+\end{document}
